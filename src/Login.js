@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios'
+import { message } from 'antd'; 
 const theme = createTheme();
 
 const styles = {
@@ -112,7 +113,7 @@ const validateEmail = (email) => {
       })
       .catch((error) => {
         console.error('Error requesting OTP:', error);
-        alert('An error occurred while requesting OTP. Please try again.');
+        message.error('An error occurred while submitting OTP. Please try again.');
       })
       .finally(() => {
         setRequestingOTP(false); // Set requestingOTP back to false
@@ -133,7 +134,7 @@ const validateEmail = (email) => {
       .post('https://api.p360.build:9003/v1/user/respondToAuthChallenge', otpData)
       .then((response) => {
         console.log("Submitted OK")
-        alert('You logged in successfully');
+        message.success('You logged in successfully');
         localStorage.setItem("accessToken", response.data.accessToken);
          localStorage.setItem("idToken",response.data.idToken);
         console.log(response.data);
@@ -142,7 +143,7 @@ const validateEmail = (email) => {
       .catch((error) => {
         console.log("Submitted Fail")
         console.error('Error submitting OTP:', error.response);
-        alert('An error occurred while submitting OTP. Please try again.');
+        message.error('An error occurred while submitting OTP. Please try again.');
         setEnteredOTP('');
       });
   };

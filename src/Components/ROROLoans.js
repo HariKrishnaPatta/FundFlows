@@ -144,11 +144,11 @@ const ROROLoans = ({firstName, lastName}) => {
                  setEditingIndex(null); // Exit edit mode
                  setEditedRow(null); // Clear the edited row
                  setActionType('edit');
-                 showSnackbar("Record is Updated Successfully","info");
+                 showSnackbar("Record is Updated Successfully","success");
                })
                .catch((err) => {
                  console.error("Error updating record:", err);
-                Modal.info({ content: "Error Occurred, While Updating Changes" });
+                Modal.error({ content: "Error Occurred, While Updating Changes" });
                });
            }
          })
@@ -178,18 +178,18 @@ const ROROLoans = ({firstName, lastName}) => {
              setEditingIndex(null); // Exit edit mode
              setEditedRow(null); // Clear the edited row
              setActionType('edit');
-            showSnackbar("Record is Updated Successfully","info");
+            showSnackbar("Record is Updated Successfully","success");
            })
            .catch((err) => {
              console.error("Error updating record:", err);
-            Modal.info({ content: "Error Occurred, While Updating Changes" });
+            Modal.error({ content: "Error Occurred, While Updating Changes" });
            });
        }
      }
      else {
             showSnackbar(
             "Please fill all the Fields in the record",
-            "info"
+            "error"
             );   }
    }
 };
@@ -276,13 +276,13 @@ const postData = {
         const updatedTableData = [...tableData];
         updatedTableData[index] = response.data.data;
         setTableData(updatedTableData);
-        showSnackbar("Record is Submitted Successfully","info");
+        showSnackbar("Record is Submitted Successfully","success");
         setEditingIndex(null);
         setNewrow(initialnewRow);
       })
       .catch((error) => {
         console.error("Error:", error);
-       Modal.info({ content: "Record not submitted" });
+       Modal.error({ content: "Record not submitted" });
       });
          }
       }) 
@@ -331,13 +331,13 @@ const postData = {
         const updatedTableData = [...tableData];
         updatedTableData[index] = response.data.data;
         setTableData(updatedTableData);
-        showSnackbar("Record is Saved Successfully","info");
+        showSnackbar("Record is Saved Successfully","success");
         setEditingIndex(null);
         setNewrow(initialnewRow);
       })
       .catch((error) => {
         console.error("Error:", error);
-       Modal.info({ content: "Record not saved" });
+       Modal.error({ content: "Record not saved" });
       });
   }
       
@@ -345,7 +345,7 @@ const postData = {
     else {
           showSnackbar(
             "Please fill all the Fields in the record",
-            "info"
+            "error"
           );    }
 };
 
