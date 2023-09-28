@@ -1,0 +1,38 @@
+* {
+    list-style-type: none;
+}
+
+header {
+    padding: 10px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+nav {
+    max-width: 150px;
+    height: 100%;
+}
+
+.homeUL {
+    display: block;
+    padding: 10px;
+}
+
+.homeUL li {
+    margin-top: 10%;
+    display: block;
+    width: 150px;
+    font-size: small;
+    font-weight: 400;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: 0.5s ease-in-out;
+
+}
+
+.homeUL li:hover {
+    background: #a4a6a4;
+}
+.homeUL li.selected {
+    background: #a4a6a4;
+}
