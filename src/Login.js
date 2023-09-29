@@ -113,7 +113,8 @@ const validateEmail = (email) => {
       })
       .catch((error) => {
         console.error('Error requesting OTP:', error);
-        message.error('An error occurred while submitting OTP. Please try again.');
+        // message.error('An error occurred while submitting OTP. Please try again.');
+        message.error('Please enter Valid Username');
       })
       .finally(() => {
         setRequestingOTP(false); // Set requestingOTP back to false
