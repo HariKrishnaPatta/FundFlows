@@ -15,6 +15,17 @@ import TermLoanSetoff from "./Components/TermLoanSetoff";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import ViewSidebar from "@mui/icons-material/Menu";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
+import AddBusinessOutlinedIcon from "@mui/icons-material/AddBusinessOutlined";
+import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
+import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
+import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
+import MoneyOffOutlinedIcon from "@mui/icons-material/MoneyOffOutlined";
+import LocalAtmOutlinedIcon from "@mui/icons-material/LocalAtmOutlined";
 
 function Home() {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -96,7 +107,8 @@ function Home() {
           style={{
             margin: "2%",
             padding: "1%",
-            marginRight: "1%",
+            marginRight: "0.5%",
+            marginLeft:"0.5%",
             marginTop: "1%",
             maxWidth: "300px",
             height: "92vh",
@@ -126,7 +138,19 @@ function Home() {
                   onClick={() => handleItemClick(item)}
                   className={selectedItem === item ? "selected" : ""}
                 >
-                  {item}
+                  <div>
+                  {item === "P2P Payments" && <SwapVertIcon  style={{height:"2.2vh"}}/>}
+                  {item === "P2P Loans" && <CurrencyRupeeIcon style={{height:"2.2vh"}}/>}
+                  {item === "RO-RO Loans" && <CreditCardIcon style={{height:"2.2vh"}}/>}
+                  {item === "P2R Surplus Fund Transfer"&&<AccountBalanceWalletOutlinedIcon style={{height:"2.2vh"}}/>}                  {item === "Payments" && <PaymentsOutlinedIcon style={{height:"2.2vh"}}/>}
+                  {item === "R2C Surplus Fund Transfer" && <AddBusinessOutlinedIcon style={{height:"2.2vh"}}/>}
+                  {item === "Receipt from RO" && <ReceiptOutlinedIcon style={{height:"2.2vh"}}/>}
+                  {item === "CO Levis" && <RequestQuoteOutlinedIcon style={{height:"2.2vh"}}/>}
+                  {item === "Asset Funds" && <AccountBalanceOutlinedIcon style={{height:"2.2vh"}}/>}
+                  {item === "Term Loan Set off" && <MoneyOffOutlinedIcon style={{height:"2.2vh"}}/>}
+                  {item === "Reserves" && <LocalAtmOutlinedIcon style={{height:"2.2vh"}}/>}
+                    {item}
+                    </div>
                 </li>
               ))}
             </ul>
@@ -149,7 +173,7 @@ function Home() {
     <img
       src="https://www.fyorin.com/hubfs/phast.jpg"
       alt="Image"
-      style={{ maxWidth: "100%", height: "100vh", opacity: "25%" }}    />
+      style={{ maxWidth: "100%", height: "100vh", opacity: "25%" }}/>
   )}
           <div
             style={{

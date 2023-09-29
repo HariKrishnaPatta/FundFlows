@@ -21,10 +21,10 @@ nav {
 .homeUL li {
     margin-top: 10%;
     display: block;
-    width: 150px;
+    width: 180px;
     font-size: small;
     font-weight: 400;
-    padding: 10px 20px;
+    padding: 10px 12px;
     border-radius: 10px;
     transition: 0.5s ease-in-out;
 
