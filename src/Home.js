@@ -108,7 +108,7 @@ function Home() {
             margin: "2%",
             padding: "1%",
             marginRight: "0.5%",
-            marginLeft:"0.7%",
+            marginLeft:"1%",
             marginTop: "1%",
             maxWidth: "300px",
             height: "92vh",
@@ -173,7 +173,7 @@ function Home() {
     <img
       src="https://www.fyorin.com/hubfs/phast.jpg"
       alt="Image"
-      style={{ maxWidth: "100%", height: "110vh", opacity: "25%" }}/>
+      style={{ maxWidth: "100%", height: "100vh",width:"200vh", opacity: "25%" }}/>
   )}
           <div
             style={{
