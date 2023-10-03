@@ -682,7 +682,7 @@ const Reserves = ({firstName, lastName}) => {
         <Table
           dataSource={tableData}
           columns={columns}
-          scroll={{ x: "max-content", y: "calc(100vh - 29vh)" }}
+          scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
           pagination={true}
           size="small"/>
       </div>
