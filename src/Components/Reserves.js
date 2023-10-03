@@ -1,3 +1,4 @@
+//Export to Excel:- 
 import React, { useState, useEffect } from "react";
 import {
   Table,
@@ -7,6 +8,7 @@ import {
   Input,
   Select,
   DatePicker,
+  Checkbox
 } from "antd";
 import moment from "moment";
 import {
@@ -16,6 +18,7 @@ import {
   CloseOutlined,
   PlusOutlined,
   LogoutOutlined,
+  ExportOutlined
 } from "@ant-design/icons";
 import { Snackbar,Alert } from "@mui/material";
 import axios from "axios";
@@ -23,6 +26,8 @@ import { useNavigate } from "react-router-dom";
 import { Row, Col } from "antd";
 import { Tooltip } from "antd";
 import dayjs from 'dayjs'
+//import { writeFile } from 'xlsx';
+import * as XLSX from 'xlsx';
 const { Option } = Select;
 const Reserves = ({firstName, lastName}) => {
   const navigate = useNavigate();
@@ -31,7 +36,7 @@ const Reserves = ({firstName, lastName}) => {
   const [actionType, setActionType] = useState('add');
   const [tableData, setTableData] = useState([]);
   const [originalRowData, setOriginalRowData] = useState(null);
-  const [snackbar, setSnackbar] = useState({open: false,message: "",severity: "info"});
+  const [snackbar, setSnackbar] = useState({open: false,message: "",severity: "warning"});
   const initialnewRow = {
       transactionType: "RAN",
       documentDate: null,
@@ -44,7 +49,7 @@ const Reserves = ({firstName, lastName}) => {
       status: "draft",
   }
   const [newRow, setNewrow] = useState(initialnewRow)
-
+  const [selectedRecords, setSelectedRecords] = useState({});
   const handleSnackbarClose = () => {
     setSnackbar({ ...snackbar, open: false });
   };
@@ -57,7 +62,7 @@ const Reserves = ({firstName, lastName}) => {
     if (editingIndex !== null) {
       showSnackbar(
           "You can add a new record only if the existing editing row is either saved or canceled",
-          "info"
+          "warning"
         );
     } else {
       setTableData([newRow, ...tableData]);
@@ -68,6 +73,14 @@ const Reserves = ({firstName, lastName}) => {
 
    const handleCellValueChange = (columnName, value, index) => {
      const updatedTableData = [...tableData];
+
+     // Handle record selection
+    if (columnName === "selected") {
+      const selected = !selectedRecords[index];
+      setSelectedRecords({ ...selectedRecords, [index]: selected });
+      return;
+    }
+
      if (columnName === "documentDate") {
        if (value) {
          let year = parseInt(moment(value, "DD-MM-YYYY").format("YYYY"), 10);
@@ -95,7 +108,7 @@ const Reserves = ({firstName, lastName}) => {
       if (editingIndex !== null && editingIndex !== index) {
       showSnackbar(
             "Existing row is in edit mode, Please save or cancel the row before editing this row",
-            "info"
+            "warning"
           );
       } else {
         const updatedTableData = [...tableData];
@@ -198,7 +211,7 @@ const Reserves = ({firstName, lastName}) => {
       if (editingIndex !== null) {
       showSnackbar(
             "You can copy a record only if the current editing row is either saved or canceled",
-            "info"
+            "warning"
           );
       } else {
         const duplicatedRow = { ...tableData[index] };
@@ -365,7 +378,7 @@ const Reserves = ({firstName, lastName}) => {
     if (editingIndex !== null) {
        showSnackbar(
         "Please save or cancel the Current Editing row to Logout from this page ",
-        "info"
+        "warning"
       )
     } else {
       Modal.confirm({
@@ -388,8 +401,100 @@ const Reserves = ({firstName, lastName}) => {
     }
   };
 
+  const handleExport = () => {
+    // Filter the tableData to include only selected records
+    const selectedRecordsToExport = tableData.filter((record, index) => selectedRecords[index]);
+
+    if (selectedRecordsToExport.length === 0) {
+      showSnackbar("No records selected for export", "warning");
+      return;
+    }
+
+    // Map the selected records to the format you want to export
+    const dataToExport = selectedRecordsToExport.map((item) => ({
+      'T typ': item.transactionType,
+      'Document Date': item.documentDate,
+      'Year': item.year,
+      'Period': item.period,
+      'Reference': item.reference,
+      'Project': item.project,
+      'Ledger': item.ledger,
+      'Amount': item.amount,
+      'Status': item.status,
+      'Entry Date': item.createdDate,
+      'Created By': item.createdBy,
+      'SubmittedOn': item.submittedOn,
+      'SubmittedBy': item.submittedBy,
+    }));
+
+    // Create Excel sheet
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    // Define the filename for the exported file
+    const fileName = 'exported_data.xlsx';
+
+    // Export the Excel file
+    XLSX.writeFile(wb, fileName);
+  };
+
+
+
+
 
   const columns = [
+ {
+    title: (
+      <div>
+        <div style={{ textAlign: "center" }}>Select
+        <Checkbox
+          // Indeterminate state for the header checkbox
+          indeterminate={
+            tableData.length > 0 &&
+            tableData.some(
+              (record, index) => selectedRecords[index]
+            ) &&
+            !tableData.every(
+              (record, index) => selectedRecords[index]
+            )
+          }
+          // Check whether all records are selected
+          checked={
+            tableData.length > 0 &&
+            tableData.every((record, index) => selectedRecords[index])
+          }
+          onChange={(e) => {
+            const newSelectedRecords = {};
+            if (e.target.checked) {
+              tableData.forEach(
+                (record, index) => (newSelectedRecords[index] = true)
+              );
+            }
+            setSelectedRecords(newSelectedRecords);
+          }}
+         />
+         </div>
+      </div>
+    ),
+    dataIndex: "selected",
+    key: "selected",
+    width: 55,
+    render: (_, record, index) => (
+      <div style={{ textAlign: "center" }}>
+        <Checkbox
+          checked={selectedRecords[index]}
+          onChange={(e) => {
+            const newSelectedRecords = {
+              ...selectedRecords,
+              [index]: e.target.checked,
+            };
+            setSelectedRecords(newSelectedRecords);
+          }}
+        />
+      </div>
+    ),
+  },
   {
     title: "Actions",
     key: "actions",
@@ -613,6 +718,7 @@ const Reserves = ({firstName, lastName}) => {
         }
       },
     },
+    
     ];
 
       useEffect(() => {
@@ -664,14 +770,23 @@ const Reserves = ({firstName, lastName}) => {
             <Tooltip title="New Row">
               <Button
                 icon={<PlusOutlined  style={{ color: 'blue' }}/>}
-                style={{ marginRight: "1vh", marginLeft: "-15vh" }}
+                style={{ marginRight: "1vh" }}
                 onClick={handleAddRow}
               />
             </Tooltip>
+            <Tooltip title="Export">
+            <Button
+              type="default"
+              icon={<ExportOutlined  style={{ color: 'darkblue' }}/>} 
+              style={{ marginRight: "1vh" }}
+              onClick={handleExport}
+            />
+          </Tooltip>
             <Tooltip title="Logout">
               <Button
                 type="default"
-                icon={<LogoutOutlined style={{ color: 'red',transform: 'rotate(270deg)' }}/>}
+                icon={<LogoutOutlined style={{ color: 'red', transform: 'rotate(270deg)' }} />}
+                style={{ marginRight: "1vh" }}
                 onClick={handleLogout}
               />
             </Tooltip>
