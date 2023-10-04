@@ -786,7 +786,7 @@ const Reserves = ({firstName, lastName}) => {
               <Button
                 type="default"
                 icon={<LogoutOutlined style={{ color: 'red', transform: 'rotate(270deg)' }} />}
-                style={{ marginRight: "1vh" }}
+                style={{ marginRight: "3vh" }}
                 onClick={handleLogout}
               />
             </Tooltip>

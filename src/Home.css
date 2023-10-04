@@ -24,15 +24,15 @@ nav {
     width: 180px;
     font-size: small;
     font-weight: 400;
-    padding: 10px 12px;
+    padding: 10px 9px;
     border-radius: 10px;
-    transition: 0.5s ease-in-out;
+    transition: 0.3s ease-in-out;
 
 }
 
 .homeUL li:hover {
-    background: #a4a6a4;
+    background: #d1d2d1;
 }
 .homeUL li.selected {
-    background: #a4a6a4;
+    background: #c0c5c0;
 }
