@@ -30,9 +30,8 @@ const ReceiptFromRO = ({firstName, lastName}) => {
   const [editedRow, setEditedRow] = useState(null);
   const [actionType, setActionType] = useState('add');
   const [tableData, setTableData] = useState([]);
- const [originalRowData, setOriginalRowData] = useState(null);
+   const [originalRowData, setOriginalRowData] = useState(null);
   const [snackbar, setSnackbar] = useState({open: false,message: "",severity: "info"});
-
   const initialnewRow = {
       transactionType: "RAN",
       documentDate: null,
@@ -45,7 +44,7 @@ const ReceiptFromRO = ({firstName, lastName}) => {
   }
     
   const [newRow, setNewrow] = useState(initialnewRow)
-const handleSnackbarClose = () => {
+  const handleSnackbarClose = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
@@ -65,7 +64,6 @@ const handleSnackbarClose = () => {
       setActionType('add');
     }
   };
-
    const handleCellValueChange = (columnName, value, index) => {
      const updatedTableData = [...tableData];
      if (columnName === "documentDate") {
@@ -91,7 +89,7 @@ const handleSnackbarClose = () => {
     setTableData(updatedTableData);
   };
   
-   const handleEditRow = (index) => {
+  const handleEditRow = (index) => {
       if (editingIndex !== null && editingIndex !== index) {
       showSnackbar(
             "Existing row is in edit mode, Please save or cancel the row before editing this row",
@@ -112,10 +110,11 @@ const handleSnackbarClose = () => {
 
 
 
+
  const handleEditRowSave = (index) => {
    if (editingIndex === index) {
        const editedData = editedRow;
-     if (editedData && editedData.transactionType && editedData.documentDate && editedData.reference  && editedData.amount && editedData.receiptProject) {
+     if (editedData && editedData.transactionType && editedData.documentDate && editedData.reference && editedData.receiptProject && editedData.amount ) {
        if (editedData.status === "submitted") {
          Modal.confirm({
            title: "Record Submition",
@@ -146,11 +145,11 @@ const handleSnackbarClose = () => {
                  setEditingIndex(null); // Exit edit mode
                  setEditedRow(null); // Clear the edited row
                  setActionType('edit');
-                    showSnackbar("Record is Updated Successfully","success");
+                 showSnackbar("Record is Updated Successfully","success");
                })
                .catch((err) => {
                  console.error("Error updating record:", err);
-                    Modal.error({ content: "Error Occurred, While Updating Changes" });
+                  Modal.error({ content: "Error Occurred, While Updating Changes" });
                });
            }
          })
@@ -180,24 +179,25 @@ const handleSnackbarClose = () => {
              setEditingIndex(null); // Exit edit mode
              setEditedRow(null); // Clear the edited row
              setActionType('edit');
-                showSnackbar("Record is Updated Successfully","success");
+             showSnackbar("Record is Updated Successfully","success");
            })
            .catch((err) => {
              console.error("Error updating record:", err);
-                Modal.error({ content: "Error Occurred, While Updating Changes" });
+            Modal.error({ content: "Error Occurred, While Updating Changes" });
            });
        }
      }
      else {
-showSnackbar(
+            showSnackbar(
             "Please fill all the Fields in the record",
             "error"
-            );   }
+       );
+     }
    }
 };
 
   
-const handleDuplicateRow = (index) => {
+ const handleDuplicateRow = (index) => {
       if (editingIndex !== null) {
       showSnackbar(
             "You can copy a record only if the current editing row is either saved or canceled",
@@ -216,13 +216,14 @@ const handleDuplicateRow = (index) => {
         setEditingIndex(0); // Set the editing index to the duplicated row at the beginning
         setActionType('duplicate'); // Set the action type to 'duplicate'
       }
-  };
-  
+    };
+
+
   const handleRowSave = (index) => {
     console.log(newRow)
   const editedRowData = tableData[index];
 
-    if (editedRowData &&editedRowData.transactionType && editedRowData.documentDate && editedRowData.reference&&editedRowData.amount&&editedRowData.receiptProject) {
+    if (editedRowData &&editedRowData.transactionType && editedRowData.documentDate && editedRowData.reference&&editedRowData.receiptProject&&editedRowData.amount) {
 
       if (editedRowData.status === "submitted") {
 
@@ -277,19 +278,16 @@ const postData = {
         const updatedTableData = [...tableData];
         updatedTableData[index] = response.data.data;
         setTableData(updatedTableData);
-                showSnackbar("Record is Submitted Successfully","success");
+        showSnackbar("Record is Submitted Successfully","success");
         setEditingIndex(null);
         setNewrow(initialnewRow);
       })
       .catch((error) => {
         console.error("Error:", error);
-                Modal.error({ content: "Record not submitted" });
+        Modal.error({ content: "Record not submitted" });
       });
          }
       }) 
-     
-    
-    
   } else {
     const createdBy = firstName && lastName ? `${firstName} ${lastName}` : "";
       const currentDateTime = dayjs().format("DD-MM-YYYY HH:mm:ss");
@@ -334,19 +332,19 @@ const postData = {
         const updatedTableData = [...tableData];
         updatedTableData[index] = response.data.data;
         setTableData(updatedTableData);
-            showSnackbar("Record is Saved Successfully","success");
+        showSnackbar("Record is Saved Successfully","success");
         setEditingIndex(null);
         setNewrow(initialnewRow);
       })
       .catch((error) => {
         console.error("Error:", error);
-            Modal.error({ content: "Record not saved" });
+         Modal.error({ content: "Record not saved" });
       });
   }
       
     }
     else {
- showSnackbar(
+          showSnackbar(
             "Please fill all the Fields in the record",
             "error"
       );
@@ -394,6 +392,7 @@ const postData = {
       })
     }
   }
+  
    const Saverow = (index) => {
     if (actionType === 'add') {
         handleRowSave(index);
@@ -538,8 +537,8 @@ const columns = [
     title: "Receipt Project",
     align:"center",
     dataIndex: "receiptProject",
-    key: "Receipt Project",
-    width: 120,
+    key: "receiptProject",
+    width: 130,
     render: (text, record, index) => {
       if (editingIndex === index) {
         return (
@@ -650,7 +649,7 @@ useEffect(() => {
   <Col style={{ marginLeft: "0vh" }}>
     <Tooltip title="New Row">
       <Button
-        icon={<PlusOutlined  style={{ color: 'blue' }} />}
+        icon={<PlusOutlined style={{ color: 'blue' }}/>}
         style={{ marginRight: "1vh", marginLeft: "-15vh" }}
         onClick={handleAddRow}
       />
@@ -670,7 +669,7 @@ useEffect(() => {
         <Table
           dataSource={tableData}
           columns={columns}
-          scroll={{ x: "max-content", y: "calc(100vh -33vh)" }}
+          scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
           pagination={true}
           size="small"
         />
