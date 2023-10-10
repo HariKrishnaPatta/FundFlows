@@ -94,60 +94,54 @@ const validateEmail = (email) => {
   };
 
 
-  const handleRequestOTP = () => {
-    if (!isEmailValid || email.trim() === '' || requestingOTP) {
-      // Disable the button if requestingOTP is true or other conditions are not met
-      return;
-    }
+ async function handleRequestOTP() {
+  if (!isEmailValid || email.trim() === '' || requestingOTP) {
+    // Disable the button if requestingOTP is true or other conditions are not met
+    return;
+  }
 
-    setRequestingOTP(true); // Set requestingOTP to true while making the request
+  setRequestingOTP(true); // Set requestingOTP to true while making the request
 
-    // Make an API request to request OTP
-    axios
-      .post(`https://api.p360.build:9003/v1/user/authenticateUser/${email}`)
-      .then((response) => {
-        setShowOTPField(true);
-        // const { sessionId } = response.data.data;
-        console.log("response", response.data.sessionId);
-        setSessionId(response.data.sessionId);
-      })
-      .catch((error) => {
-        console.error('Error requesting OTP:', error);
-        // message.error('An error occurred while submitting OTP. Please try again.');
-        message.error('Please enter Valid Username');
-      })
-      .finally(() => {
-        setRequestingOTP(false); // Set requestingOTP back to false
-      });
+  // Make an API request to request OTP
+  try {
+    const response = await axios.post(`https://api.p360.build:9003/v1/user/authenticateUser/${email}`);
+    setShowOTPField(true);
+    console.log("response", response.data.sessionId);
+    setSessionId(response.data.sessionId);
+  } catch (error) {
+    console.error('Error requesting OTP:', error);
+    message.error('Please enter Valid Username');
+  } finally {
+    setRequestingOTP(false);
+  }
+}
+  
+
+  async function handleOTPSubmit() {
+  console.log("Session : ", sessionId);
+  console.log("Submitted called");
+  // Make an API request to submit OTP
+  const otpData = {
+    session: sessionId,
+    email: email,
+    confirmationCode: enteredOTP,
   };
 
-  const handleOTPSubmit = () => {
-    console.log("Session : ", sessionId);
-    console.log("Submitted called");
-    // Make an API request to submit OTP
-    const otpData = {
-      session:sessionId,
-      email:email,
-      confirmationCode: enteredOTP,
-    };
-    
-    axios
-      .post('https://api.p360.build:9003/v1/user/respondToAuthChallenge', otpData)
-      .then((response) => {
-        console.log("Submitted OK")
-        message.success('You logged in successfully');
-        localStorage.setItem("accessToken", response.data.accessToken);
-         localStorage.setItem("idToken",response.data.idToken);
-        console.log(response.data);
-        navigate('/Home');
-      })
-      .catch((error) => {
-        console.log("Submitted Fail")
-        console.error('Error submitting OTP:', error.response);
-        message.error('An error occurred while submitting OTP. Please try again.');
-        setEnteredOTP('');
-      });
-  };
+  try {
+    const response = await axios.post('https://api.p360.build:9003/v1/user/respondToAuthChallenge', otpData);
+    console.log("Submitted OK");
+    message.success('You logged in successfully');
+    localStorage.setItem("accessToken", response.data.accessToken);
+    localStorage.setItem("idToken", response.data.idToken);
+    console.log(response.data);
+    navigate('/Home');
+  } catch (error) {
+    console.log("Submitted Fail");
+    console.error('Error submitting OTP:', error.response);
+    message.error('An error occurred while submitting OTP. Please try again.');
+    setEnteredOTP('');
+  }
+}
 
 
   

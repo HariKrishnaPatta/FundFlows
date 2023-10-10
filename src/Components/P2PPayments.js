@@ -17,7 +17,7 @@ import {
   PlusOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { Snackbar,Alert } from "@mui/material";
+import { Snackbar,Alert,Skeleton} from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Row, Col } from "antd";
@@ -32,7 +32,7 @@ const P2PPayments = ({firstName, lastName}) => {
   const [tableData, setTableData] = useState([]);
   const [originalRowData, setOriginalRowData] = useState(null);
   const [snackbar, setSnackbar] = useState({open: false,message: "",severity: "info"});
-
+  const [isdataLoaded, setIsdataLoaded] = useState(false);
   const initialnewRow = {
       transactionType: "RAN",
       documentDate: null,
@@ -626,81 +626,103 @@ const columns = [
   ];
 
 useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        const headers = {
-          Authorization: `Bearer ${accessToken}`,
-        };
+  const fetchData = async () => {
+    setIsdataLoaded(true)
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
 
-        const response = await axios.get(
-          "https://api.p360.build:6060/v1/fundflow/p2p-payments/fetchAll", { headers });
-        setTableData(response.data.data);
-          console.log("the get method is working")
-        // Handle the response data here
-        console.log("Response:", response.data);
-      } catch (error) {
-        // Handle any errors here
-        console.error("Error:", error);
-      } 
-    };
-
-    fetchData();
-  }, []); // The empty dependency array means this effect runs once when the component mounts
+      const response = await axios.get(
+        "https://api.p360.build:6060/v1/fundflow/p2p-payments/fetchAll",
+        { headers }
+      )
+        setTableData(response.data.data)
+        setIsdataLoaded(false)
+        console.log("Data fetched successfully:", response.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setIsdataLoaded(false)
+    }
+  };
+  fetchData();
+}, []);
   
   return (
+  <div>
+    <Snackbar
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      open={snackbar.open}
+      autoHideDuration={2000} // Adjust as needed
+      onClose={handleSnackbarClose}
+    >
+      <Alert severity={snackbar.severity} onClose={handleSnackbarClose}>
+        {snackbar.message}
+      </Alert>
+    </Snackbar>
+
     <div>
-       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={snackbar.open}
-        autoHideDuration={2000} // Adjust as needed
-        onClose={handleSnackbarClose}
-      >
-        <Alert
-          severity={snackbar.severity}
-          onClose={handleSnackbarClose}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-
-     <div>
-<Row justify="space-between" align="middle" style={{marginTop:"-5vh"}}>
-  <Col>
-    <Typography.Title level={4} style={{ fontFamily: "open sans", paddingLeft: "10vh" }}>
-      <h2>P2P Payments</h2>
-    </Typography.Title>
-  </Col>
-  <Col style={{ marginLeft: "0vh" }}>
-    <Tooltip title="New Row">
-      <Button
-        icon={<PlusOutlined style={{ color: 'blue' }} />}
-        style={{ marginRight: "1vh", marginLeft: "-15vh" }}
-        onClick={handleAddRow}
-      />
-    </Tooltip>
-    <Tooltip title="Logout">
-      <Button
-        type="default"
-        icon={<LogoutOutlined style={{ color: 'red',transform: 'rotate(270deg)' }} />}
-        onClick={handleLogout}
-      />
-    </Tooltip>
-  </Col>
-</Row>
-
-      </div>
-      <div>
-        <Table
-          dataSource={tableData}
-          columns={columns}
-          scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
-          pagination={true}
-          size="small"
-        />
-      </div>
+      <Row justify="space-between" align="middle" style={{ marginTop: "-5vh" }}>
+        <Col>
+          <Typography.Title level={4} style={{ fontFamily: "open sans", paddingLeft: "10vh" }}>
+            <h2>P2P Payments</h2>
+          </Typography.Title>
+        </Col>
+        <Col style={{ marginLeft: "0vh" }}>
+          <Tooltip title="New Row">
+            <Button
+              icon={<PlusOutlined style={{ color: 'blue' }} />}
+              style={{ marginRight: "1vh", marginLeft: "-15vh" }}
+              onClick={handleAddRow}
+            />
+          </Tooltip>
+          <Tooltip title="Logout">
+            <Button
+              type="default"
+              icon={<LogoutOutlined style={{ color: 'red', transform: 'rotate(270deg)' }} />}
+              onClick={handleLogout}
+            />
+          </Tooltip>
+        </Col>
+      </Row>
     </div>
-  );
+    {isdataLoaded ? (
+      <Table
+        dataSource={Array(10).fill(null)} // Display a skeleton for 10 rows (adjust as needed)
+        columns={columns}
+        scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
+        pagination={false}
+        size="small"
+        bordered
+        rowKey={(record, index) => `skeleton-${index}`}
+        components={{
+          body: {
+            row: (props) => (
+              <tr {...props}>
+                {columns.map((column, columnIndex) => (
+                  <td key={columnIndex} align={column.align}>
+                    <Skeleton active />
+                  </td>
+                ))}
+              </tr>
+            ),
+          },
+        }}
+          />
+    ) : (
+    <Table
+        dataSource={tableData}
+        columns={columns}
+        scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
+        pagination={true}
+        size="small"
+        bordered
+        rowKey="key" // Assuming you have a unique key for each row
+      />
+    )}
+  </div>
+);
 };
 
 export default P2PPayments;
