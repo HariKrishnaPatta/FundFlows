@@ -97,10 +97,13 @@ const validateEmail = (email) => {
  async function handleRequestOTP() {
   if (!isEmailValid || email.trim() === '' || requestingOTP) {
     // Disable the button if requestingOTP is true or other conditions are not met
+    if (email.trim() === '') {
+      message.warning('Please enter the Username');
+    }
     return;
   }
 
-  setRequestingOTP(true); // Set requestingOTP to true while making the request
+  setRequestingOTP(true);
 
   // Make an API request to request OTP
   try {
@@ -110,11 +113,12 @@ const validateEmail = (email) => {
     setSessionId(response.data.sessionId);
   } catch (error) {
     console.error('Error requesting OTP:', error);
-    message.error('Please enter Valid Username');
+    message.error('Please enter a valid username');
   } finally {
     setRequestingOTP(false);
   }
 }
+
   
 
   async function handleOTPSubmit() {
@@ -138,7 +142,7 @@ const validateEmail = (email) => {
   } catch (error) {
     console.log("Submitted Fail");
     console.error('Error submitting OTP:', error.response);
-    message.error('An error occurred while submitting OTP. Please try again.');
+    message.error('Enter the Valid OTP');
     setEnteredOTP('');
   }
 }
