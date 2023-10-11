@@ -20,7 +20,7 @@ import {
   LogoutOutlined,
   ExportOutlined
 } from "@ant-design/icons";
-import { Snackbar,Alert } from "@mui/material";
+import { Snackbar,Alert,Skeleton } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Row, Col } from "antd";
@@ -36,7 +36,8 @@ const Reserves = ({firstName, lastName}) => {
   const [actionType, setActionType] = useState('add');
   const [tableData, setTableData] = useState([]);
   const [originalRowData, setOriginalRowData] = useState(null);
-  const [snackbar, setSnackbar] = useState({open: false,message: "",severity: "warning"});
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "warning" });
+  const [isdataLoaded, setIsdataLoaded] = useState(false);
   const initialnewRow = {
       transactionType: "RAN",
       documentDate: null,
@@ -722,7 +723,8 @@ const Reserves = ({firstName, lastName}) => {
     ];
 
       useEffect(() => {
-      const fetchData = async () => {
+        const fetchData = async () => {
+        setIsdataLoaded(true)
         try {
           const accessToken = localStorage.getItem("accessToken");
           const headers = {
@@ -732,12 +734,14 @@ const Reserves = ({firstName, lastName}) => {
           const response = await axios.get(
             "https://api.p360.build:6060/v1/fundflow/reserves/fetchAll", { headers });
           setTableData(response.data.data);
+          setIsdataLoaded(false)
             console.log("the get method is working")
           // Handle the response data here
           console.log("Response:", response.data);
         } catch (error) {
           // Handle any errors here
           console.error("Error:", error);
+          setIsdataLoaded(false)
         } 
       };
       fetchData();
@@ -793,14 +797,40 @@ const Reserves = ({firstName, lastName}) => {
           </Col>
       </Row>
       </div>
-      <div>
-        <Table
-          dataSource={tableData}
-          columns={columns}
-          scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
-          pagination={true}
-          size="small"/>
-      </div>
+    {isdataLoaded ? (
+      <Table
+        dataSource={Array(10).fill(null)} // Display a skeleton for 10 rows (adjust as needed)
+        columns={columns}
+        scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
+        pagination={false}
+        size="small"
+        bordered
+        rowKey={(record, index) => `skeleton-${index}`}
+        components={{
+          body: {
+            row: (props) => (
+              <tr {...props}>
+                {columns.map((column, columnIndex) => (
+                  <td key={columnIndex} align={column.align}>
+                    <Skeleton active />
+                  </td>
+                ))}
+              </tr>
+            ),
+          },
+        }}
+          />
+    ) : (
+    <Table
+        dataSource={tableData}
+        columns={columns}
+        scroll={{ x: "max-content", y: "calc(100vh - 33vh)" }}
+        pagination={true}
+        size="small"
+        bordered
+        rowKey="key" // Assuming you have a unique key for each row
+      />
+    )}
     </div>
   );
 };
